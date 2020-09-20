@@ -30,6 +30,7 @@ async fn main() {
         let server = warp::any().map(move || {
             warp::reply::html(md.to_owned())
         });
+        println!("Server running 127.0.0.1:{}", port);
         warp::serve(server).run(([127,0,0,1], port)).await;
     }
 }
