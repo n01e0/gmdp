@@ -18,17 +18,16 @@ async fn main() {
         (@arg path: +required "markdown file")
     ).get_matches();
 
-    let path = matches.value_of("path").unwrap() ;
-    let md = parse_markdown(path).unwrap_or_else(|e| { eprintln!("{}", e); exit(1);});
-
-
     if matches.is_present("only_parse") {
+        let path = matches.value_of("path").unwrap() ;
+        let md = parse_markdown(path).unwrap_or_else(|e| { eprintln!("{}", e); exit(1);});
         println!("{}", &md);
     } else {
         let port = matches.value_of("port").unwrap_or("6419").parse::<u16>().unwrap_or_else(|e| { eprintln!("{}", e); exit(1);});
-        let md = format!("{}", md);
         let server = warp::any().map(move || {
-            warp::reply::html(md.to_owned())
+            let path = matches.value_of("path").unwrap() ;
+            let md = parse_markdown(path).unwrap_or_else(|e| { eprintln!("{}", e); exit(1);});
+            warp::reply::html(format!("{}", md))
         });
         println!("Server running 127.0.0.1:{}", port);
         warp::serve(server).run(([127,0,0,1], port)).await;
