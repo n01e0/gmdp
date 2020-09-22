@@ -63,10 +63,7 @@ async fn main() {
             daemon.pid_file = matches.value_of("pid_file");
             daemon.workdir = matches.value_of("workdir");
             match daemon.daemonize() {
-                Ok(n) => {
-                    println!("server pid is {}({})", std::process::id(), daemon.pid_file.unwrap_or("/tmp/gmdp.pid"));
-                    println!("{}", n);
-                },
+                Ok(_) => (),
                 Err(e) => error!("{}", e)
             }
         }
@@ -76,7 +73,7 @@ async fn main() {
             warp::reply::html(md)
         });
 
-        info!("Server running 127.0.0.1:{}", port);
+        info!("Server running 127.0.0.1:{}, pid = {}", port, std::process::id());
         warp::serve(server).run(([127, 0, 0, 1], port)).await;
     }
 }
